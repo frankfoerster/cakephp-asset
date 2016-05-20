@@ -34,8 +34,8 @@ class AssetHelper extends Helper
      * append a last modified timestamp to clear the browser cache.
      *
      * @param string $path The path to the css file relative to WEBROOT
-     * @param bool $plugin
-     * @param bool $appendTime
+     * @param bool $plugin Either false or the name of a plugin.
+     * @param bool $appendTime Whether to append a last modified timestamp to the url.
      * @return string
      */
     public function css($path, $plugin = false, $appendTime = true)
