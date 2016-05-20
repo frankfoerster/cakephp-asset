@@ -1,0 +1,33 @@
+{
+  "name": "frankfoerster/cakephp-asset",
+  "description": "Provides a CakePHP 3.x AssetHelper to selectively add last modified timestamps to css and js assets.",
+  "type": "cakephp-plugin",
+  "keywords": ["cakephp", "helper", "assets", "timestamp"],
+  "homepage": "https://github.com/frankfoerster/cakephp-asset",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Frank Förster",
+      "homepage": "http://frankfoerster.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.9"
+  },
+  "require-dev": {
+    "cakephp/cakephp": "~3.2",
+    "phpunit/phpunit": "5.*",
+    "cakephp/cakephp-codesniffer": "2.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "FrankFoerster\\Asset\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "FrankFoerster\\Asset\\Test\\": "tests"
+    }
+  }
+}
