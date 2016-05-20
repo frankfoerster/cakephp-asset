@@ -10,9 +10,10 @@
  * @link https://github.com/frankfoerster/cakephp-environment CakePHP Environment Plugin
  * @license http://www.opensource.org/licenses/mit-license.php MIT License
  */
-use FrankFoerster\Asset\View\Helper\AssetHelper;
+
 use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
+use FrankFoerster\Asset\View\Helper\AssetHelper;
 
 /**
  * Class AssetHelperTest
