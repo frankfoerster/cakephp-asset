@@ -69,11 +69,33 @@ class AssetHelper extends Helper
      */
     protected function _getUrl($path, $plugin, $appendTime = true)
     {
-        $absPath = $this->_getBasePath($plugin) . $path;
+        $pathParts = explode('/', $path);
+        $isAssetPath = ($pathParts[0] === 'ASSETS');
+
+        if ($isAssetPath) {
+            $absPath = $this->_getBaseAssetPath($plugin) . join('/', array_slice($pathParts, 1));
+        } else {
+            $absPath = $this->_getBasePath($plugin) . $path;
+        }
+
         $time = $appendTime ? $this->_getModifiedTime($absPath) : '';
-        $path = ($plugin !== false) ? $plugin . '.' . $path : $path;
+        $path = ($plugin !== false) ? strtolower(preg_replace('/\\//', '_', $plugin)) . '/' . $path : $path;
 
         return $this->Url->assetUrl($path) . $time;
+    }
+
+    /**
+     * Get the path to /src/Assets either of the app or the provided $plugin.
+     *
+     * @param bool $plugin
+     * @return string
+     */
+    protected function _getBaseAssetPath($plugin = false)
+    {
+        if ($plugin !== false) {
+            return $this->_getPluginPath($plugin) . 'src' . DS . 'Assets' . DS;
+        }
+        return ROOT . DS . 'src' . DS . 'Assets' . DS;
     }
 
     /**
@@ -85,13 +107,24 @@ class AssetHelper extends Helper
     protected function _getBasePath($plugin = false)
     {
         if ($plugin !== false) {
-            if (!Plugin::loaded($plugin)) {
-                throw new MissingPluginException('Plugin ' . $plugin . ' is not loaded.');
-            }
-            $pluginPath = Plugin::path($plugin);
-            return $pluginPath . DS . 'webroot' . DS;
+            return $this->_getPluginPath($plugin) . 'webroot' . DS;
         }
         return WWW_ROOT;
+    }
+
+    /**
+     * Get the absolute path to the given $plugin.
+     *
+     * @param string $plugin The name of the plugin.
+     * @return string
+     */
+    protected function _getPluginPath($plugin)
+    {
+        if (!Plugin::loaded($plugin)) {
+            throw new MissingPluginException('Plugin ' . $plugin . ' is not loaded.');
+        }
+        $pluginPath = Plugin::path($plugin);
+        return $pluginPath;
     }
 
     /**
