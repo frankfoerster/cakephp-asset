@@ -5,8 +5,12 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/frankfoerster/cakephp-asset.svg?style=flat-square)](https://packagist.org/packages/frankfoerster/cakephp-asset)
 [![Latest Stable Version](https://img.shields.io/packagist/v/frankfoerster/cakephp-asset.svg?style=flat-square&label=stable)](https://packagist.org/packages/frankfoerster/cakephp-asset)
 
-Provides a CakePHP 3.x AssetHelper to selectively add last modified timestamps to css and js assets.
+1. Provides a CakePHP 3.x AssetHelper to selectively add last modified timestamps to css and js assets.
 CakePHP's implementation of Asset timestamps does not allow you to apply the behavior selectively to single files. Therefore I created this little Helper.
+
+2. Provides a CakePHP 3.x AssetFilter to request asset files from ``/src/Assets/*``.
+For example if you delevop an app using requirejs, then you can enable the AssetFilter to request modules from ``/src/Assets/js/*``. This enables you to hide your source files from the webroot of your application or plugin.
+
 
 ## Installation
 
@@ -15,7 +19,7 @@ You can install this plugin into your CakePHP application using [composer](http:
 Run the following command
 ```sh
 composer require frankfoerster/cakephp-asset
- ```
+```
 
 ## Configuration
 
@@ -97,3 +101,49 @@ produces the following output:
 ```html
 <script type="text/javascript" src="my_plugin/js/plugin.js?t=1460443221"></script>
 ```
+
+### Linking Source Assets
+
+To request assets from ``/src/Assets/*`` you have to enable the AssetFilter in ``config/bootstrap.php``:
+
+```php
+DispatcherFactory::add('FrankFoerster/Asset.Asset');
+```
+
+Then you can use the AssetHelper to request a source asset.
+
+#### App
+
+Linking the JS file **your_app/src/Assets/js/app.js**
+
+```php
+echo $this->Asset->js('ASSETS/js/app.js');
+```
+
+produces the following output:
+
+```html
+<script type="text/javascript" src="ASSETS/js/app.js?t=1460443221"></script>
+```
+
+and the AssetFilter will then return the content of **your_app/src/Assets/js/app.js**.
+
+#### Plugin
+
+Linking the JS file **MyPlugin/src/Assets/js/plugin.js**
+
+```php
+echo $this->Asset->js('ASSETS/js/plugin.js', 'MyPlugin);
+```
+
+will procude the following output:
+
+```html
+<script type="text/javascript" src="my_plugin/ASSETS/js/plugin.js?t=1460443221"></script>
+```
+
+and the AssetFilter will then return the content of **MyPlugin/src/Assets/js/plugin.js**.
+
+#### Important!
+
+Linking of source assets is only enabled for Configure ``'debug' => true``.
