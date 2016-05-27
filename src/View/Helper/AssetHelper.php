@@ -98,7 +98,7 @@ class AssetHelper extends Helper
     /**
      * Get the path to /src/Assets either of the app or the provided $plugin.
      *
-     * @param bool $plugin
+     * @param bool|string $plugin The name of a plugin or false.
      * @return string
      */
     protected function _getBaseAssetPath($plugin = false)
