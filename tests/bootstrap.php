@@ -19,5 +19,17 @@ require dirname(__DIR__) . '/tests/paths.php';
 \Cake\Cache\Cache::disable();
 
 Plugin::load('TestPlugin', [
-    'path' => ROOT . DS . 'tests' . DS . 'testapp' . DS . 'Plugin' . DS . 'TestPlugin'
+    'path' => ROOT . DS . 'Plugin' . DS . 'TestPlugin' . DS
+]);
+
+Plugin::load('Namespaced/Plugin', [
+    'path' => ROOT . DS . 'Plugin' . DS . 'Namespaced' . DS . 'Plugin' . DS
+]);
+
+Plugin::load('Namespaced2/TestPlugin', [
+    'path' => ROOT . DS . 'Plugin' . DS . 'Namespaced2' . DS . 'TestPlugin' . DS
+]);
+
+Plugin::load('FooBar/TestPlugin', [
+    'path' => ROOT . DS . 'Plugin' . DS . 'FooBar' . DS . 'TestPlugin' . DS
 ]);

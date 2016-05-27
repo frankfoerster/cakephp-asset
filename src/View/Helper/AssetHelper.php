@@ -13,6 +13,7 @@ namespace FrankFoerster\Asset\View\Helper;
 
 use Cake\Core\Exception\MissingPluginException;
 use Cake\Core\Plugin;
+use Cake\Utility\Inflector;
 use Cake\View\Helper;
 
 /**
@@ -79,7 +80,17 @@ class AssetHelper extends Helper
         }
 
         $time = $appendTime ? $this->_getModifiedTime($absPath) : '';
-        $path = ($plugin !== false) ? strtolower(preg_replace('/\\//', '_', $plugin)) . '/' . $path : $path;
+        $pathPrefix = '';
+        if ($plugin !== false) {
+            $pluginParts = explode('/', $plugin);
+            foreach ($pluginParts as $key => $part) {
+                $pluginParts[$key] = Inflector::underscore($part);
+            }
+            $pathPrefix .= join('/', $pluginParts) . '/';
+        } else {
+            $pathPrefix = '';
+        }
+        $path = $pathPrefix . $path;
 
         return $this->Url->assetUrl($path) . $time;
     }

@@ -40,32 +40,214 @@ class AssetHelperTest extends TestCase
         $this->assertTrue(in_array('Url', $this->AssetHelper->helpers));
     }
 
-    public function testCssOnExistingFile()
+    /**
+     * Data provider for asset filter
+     *
+     * - theme assets.
+     * - plugin assets.
+     * - plugin assets in sub directories.
+     * - unknown plugin assets.
+     *
+     * @return array
+     */
+    public static function assetProvider()
     {
-        $result = $this->AssetHelper->css('css/test.css');
-        $this->assertTextContains('<link rel="stylesheet" type="text/css" href="css/test.css', $result);
-        $this->assertTextContains('?t=', $result);
+        return [
+            [
+                'css',
+                'css/test.css',
+                false,
+                'css/test.css',
+                true
+            ],
+            [
+                'css',
+                'css/foobar.css',
+                false,
+                'css/foobar.css',
+                false
+            ],
+            [
+                'css',
+                'css/plugin.css',
+                'TestPlugin',
+                'test_plugin/css/plugin.css',
+                true
+            ],
+            [
+                'css',
+                'css/test.css',
+                'TestPlugin',
+                'test_plugin/css/test.css',
+                false
+            ],
+            [
+                'js',
+                'js/test.js',
+                false,
+                'js/test.js',
+                true
+            ],
+            [
+                'js',
+                'js/foobar.js',
+                false,
+                'js/foobar.js',
+                false
+            ],
+            [
+                'js',
+                'ASSETS/js/test.js',
+                false,
+                'ASSETS/js/test.js',
+                true
+            ],
+            [
+                'js',
+                'ASSETS/js/foobar.js',
+                false,
+                'ASSETS/js/foobar.js',
+                false
+            ],
+            [
+                'js',
+                'js/plugin.js',
+                'TestPlugin',
+                'test_plugin/js/plugin.js',
+                true
+            ],
+            [
+                'js',
+                'js/test.js',
+                'TestPlugin',
+                'test_plugin/js/test.js',
+                false
+            ],
+            [
+                'js',
+                'ASSETS/js/test.js',
+                'TestPlugin',
+                'test_plugin/ASSETS/js/test.js',
+                true
+            ],
+            [
+                'js',
+                'ASSETS/js/foobar.js',
+                'TestPlugin',
+                'test_plugin/ASSETS/js/foobar.js',
+                false
+            ],
+            [
+                'js',
+                'js/plugin.js',
+                'Namespaced/Plugin',
+                'namespaced/plugin/js/plugin.js',
+                true
+            ],
+            [
+                'css',
+                'css/plugin.css',
+                'Namespaced/Plugin',
+                'namespaced/plugin/css/plugin.css',
+                true
+            ],
+            [
+                'js',
+                'ASSETS/js/test.js',
+                'Namespaced/Plugin',
+                'namespaced/plugin/ASSETS/js/test.js',
+                true
+            ],
+            [
+                'js',
+                'js/plugin.js',
+                'Namespaced2/TestPlugin',
+                'namespaced2/test_plugin/js/plugin.js',
+                true
+            ],
+            [
+                'css',
+                'css/plugin.css',
+                'Namespaced2/TestPlugin',
+                'namespaced2/test_plugin/css/plugin.css',
+                true
+            ],
+            [
+                'js',
+                'ASSETS/js/test.js',
+                'Namespaced2/TestPlugin',
+                'namespaced2/test_plugin/ASSETS/js/test.js',
+                true
+            ],
+            [
+                'js',
+                'js/plugin.js',
+                'FooBar/TestPlugin',
+                'foo_bar/test_plugin/js/plugin.js',
+                true
+            ],
+            [
+                'css',
+                'css/plugin.css',
+                'FooBar/TestPlugin',
+                'foo_bar/test_plugin/css/plugin.css',
+                true
+            ],
+            [
+                'js',
+                'ASSETS/js/test.js',
+                'FooBar/TestPlugin',
+                'foo_bar/test_plugin/ASSETS/js/test.js',
+                true
+            ],
+            [
+                'js',
+                'js/foobar.js',
+                'FooBar/TestPlugin',
+                'foo_bar/test_plugin/js/foobar.js',
+                false
+            ],
+            [
+                'js',
+                'ASSETS/js/foobar.js',
+                'FooBar/TestPlugin',
+                'foo_bar/test_plugin/ASSETS/js/foobar.js',
+                false
+            ]
+        ];
     }
 
-    public function testCssOnNonExistingFile()
+    /**
+     * Test the asset helper methods.
+     *
+     * @dataProvider assetProvider
+     * @param string $method
+     * @param string $asset
+     * @param bool|string $plugin
+     * @param string $expected
+     * @param bool $timestamp
+     * @return void
+     */
+    public function testAssetHelper($method, $asset, $plugin, $expected, $timestamp)
     {
-        $result = $this->AssetHelper->css('css/foobar.css');
-        $this->assertTextContains('<link rel="stylesheet" type="text/css" href="css/foobar.css', $result);
-        $this->assertTextNotContains('?t=', $result);
-    }
+        if (!method_exists($this->AssetHelper, $method)) {
+            user_error('Method "' . $method . '"" does not exist on AssetHelper and therefore cannot be tested.');
+        }
 
-    public function testCssForPluginOnExistingFile()
-    {
-        $result = $this->AssetHelper->css('css/plugin.css', 'TestPlugin');
-        $this->assertTextContains('<link rel="stylesheet" type="text/css" href="test_plugin/css/plugin.css', $result);
-        $this->assertTextContains('?t=', $result);
-    }
-
-    public function testCssForPluginOnNonExistingFile()
-    {
-        $result = $this->AssetHelper->css('css/test.css', 'TestPlugin');
-        $this->assertTextContains('<link rel="stylesheet" type="text/css" href="test_plugin/css/test.css', $result);
-        $this->assertTextNotContains('?t=', $result);
+        $result = $this->AssetHelper->$method($asset, $plugin);
+        switch ($method) {
+            case 'css':
+                $this->assertTextContains('<link rel="stylesheet" type="text/css" href="' . $expected, $result);
+                break;
+            case 'js':
+                $this->assertTextContains('<script type="text/javascript" src="' . $expected, $result);
+                break;
+        }
+        if ($timestamp) {
+            $this->assertTextContains('?t=', $result);
+        } else {
+            $this->assertTextNotContains('?t=', $result);
+        }
     }
 
     /**
@@ -74,34 +256,6 @@ class AssetHelperTest extends TestCase
     public function testCssForMissingPlugin()
     {
         $this->AssetHelper->css('css/test.css', 'Whatever');
-    }
-
-    public function testJsOnExistingFile()
-    {
-        $result = $this->AssetHelper->js('js/test.js');
-        $this->assertTextContains('<script type="text/javascript" src="js/test.js', $result);
-        $this->assertTextContains('?t=', $result);
-    }
-
-    public function testJsOnNonExistingFile()
-    {
-        $result = $this->AssetHelper->js('js/foobar.js');
-        $this->assertTextContains('<script type="text/javascript" src="js/foobar.js', $result);
-        $this->assertTextNotContains('?t=', $result);
-    }
-
-    public function testJsForPluginOnExistingFile()
-    {
-        $result = $this->AssetHelper->js('js/plugin.js', 'TestPlugin');
-        $this->assertTextContains('<script type="text/javascript" src="test_plugin/js/plugin.js', $result);
-        $this->assertTextContains('?t=', $result);
-    }
-
-    public function testJsForPluginOnNonExistingFile()
-    {
-        $result = $this->AssetHelper->js('js/test.js', 'TestPlugin');
-        $this->assertTextContains('<script type="text/javascript" src="test_plugin/js/test.js', $result);
-        $this->assertTextNotContains('?t=', $result);
     }
 
     /**

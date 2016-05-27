@@ -28,24 +28,26 @@ if (!defined('DS')) {
 /**
  * The full path to the directory which holds "App", WITHOUT a trailing DS.
  */
-define('ROOT', dirname(__DIR__));
+define('ROOT', dirname(__DIR__) . DS . 'tests' . DS . 'testapp');
+
+define('PLUGIN_ROOT', dirname(__DIR__));
 
 /**
  * File path to the webroot directory.
  */
-define('WWW_ROOT', ROOT . DS . 'tests' . DS . 'testapp' . DS . 'webroot' . DS);
+define('WWW_ROOT', ROOT . DS . 'webroot' . DS);
 
 /**
  * Path to the tests directory.
  */
-define('TESTS', ROOT . DS . 'tests' . DS);
+define('TESTS', PLUGIN_ROOT . DS . 'tests' . DS);
 
 /**
  * The absolute path to the "cake" directory, WITHOUT a trailing DS.
  *
  * CakePHP should always be installed with composer, so look there.
  */
-define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
+define('CAKE_CORE_INCLUDE_PATH', PLUGIN_ROOT . DS . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
 
 /**
  * Path to the cake directory.

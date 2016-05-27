@@ -1,9 +1,18 @@
 <?php
-
+/**
+ * Copyright (c) Frank Förster (http://frankfoerster.com)
+ *
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Frank Förster (http://frankfoerster.com)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 namespace FrankFoerster\Asset\Routing\Filter;
 
+use Cake\Core\Configure;
 use Cake\Core\Plugin;
-use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 
 class AssetFilter extends \Cake\Routing\Filter\AssetFilter
@@ -17,7 +26,7 @@ class AssetFilter extends \Cake\Routing\Filter\AssetFilter
     protected $_priority = 8;
 
     /**
-     * Builds asset file path based off url
+     * Builds asset file path based on the provided $url.
      *
      * @param string $url Asset URL
      * @return string|void Absolute path for asset file
@@ -25,29 +34,29 @@ class AssetFilter extends \Cake\Routing\Filter\AssetFilter
     protected function _getAssetFile($url)
     {
         $parts = explode('/', $url);
-
-        $firstPart = $parts[0];
-        if ($firstPart !== 'ASSETS') {
-            $pluginPart = $parts[0];
-            $isAssetRequest = (isset($parts[1]) && $parts[1] === 'ASSETS');
-        } else {
-            $pluginPart = $parts[1];
-            $isAssetRequest = true;
-        }
-
-        $namespacedPlugin = join('/', Hash::map(explode('_', $pluginPart), '{n}', function ($part) {
-            return Inflector::camelize($part);
-        }));
-        $camelcasedPlugin = Inflector::camelize($pluginPart);
-
+        $pluginPart = [];
         $plugin = false;
-        if (Plugin::loaded($namespacedPlugin)) {
-            $plugin = $namespacedPlugin;
-        } elseif (Plugin::loaded($camelcasedPlugin)) {
-            $plugin = $camelcasedPlugin;
+        for ($i = 0; $i < 2; $i++) {
+            if (!isset($parts[$i])) {
+                break;
+            }
+            $pluginPart[] = Inflector::camelize($parts[$i]);
+            $possiblePlugin = implode('/', $pluginPart);
+            if ($possiblePlugin && Plugin::loaded($possiblePlugin)) {
+                $plugin = $possiblePlugin;
+                $parts = array_slice($parts, $i + 1);
+                break;
+            }
         }
 
-        if ($plugin !== false) {
+        $isAssetRequest = (isset($parts[0]) && $parts[0] === 'ASSETS');
+        if ($isAssetRequest && Configure::read('debug')) {
+            $parts = array_slice($parts, 1);
+        } else {
+            $isAssetRequest = false;
+        }
+
+        if ($plugin && Plugin::loaded($plugin)) {
             return $this->_getPluginAsset($plugin, $parts, $isAssetRequest);
         } else {
             return $this->_getAppAsset($parts, $isAssetRequest);
@@ -65,7 +74,6 @@ class AssetFilter extends \Cake\Routing\Filter\AssetFilter
      */
     protected function _getPluginAsset($plugin, $parts, $isAssetRequest)
     {
-        $parts = array_slice($parts, $isAssetRequest ? 2 : 1);
         $fileFragment = implode(DS, $parts);
         $path = Plugin::path($plugin);
         if ($isAssetRequest) {
@@ -86,7 +94,6 @@ class AssetFilter extends \Cake\Routing\Filter\AssetFilter
      */
     protected function _getAppAsset($parts, $isAssetRequest)
     {
-        $parts = array_slice($parts, $isAssetRequest ? 1 : 0);
         $fileFragment = implode(DS, $parts);
         $path = $isAssetRequest ? ROOT . DS . 'src' . DS . 'Assets' . DS : WWW_ROOT;
         return $path . $fileFragment;
