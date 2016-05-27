@@ -90,7 +90,7 @@ produces the following output:
 
 ### Linking Plugin Assets
 
-Linking the JS file **MyPluginRootPath/webroot/js/plugin.js**
+Linking the JS file **MyPlugin/webroot/js/plugin.js**
 
 ```php
 echo $this->Asset->js('js/plugin.js', 'MyPlugin');
