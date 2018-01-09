@@ -46,6 +46,7 @@ class AssetFilterTest extends TestCase
         $class = new ReflectionClass($class);
         $method = $class->getMethod($method);
         $method->setAccessible(true);
+
         return $method;
     }
 
