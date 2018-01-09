@@ -81,6 +81,7 @@ class AssetFilter extends \Cake\Routing\Filter\AssetFilter
         } else {
             $path .= 'webroot' . DS;
         }
+
         return $path . $fileFragment;
     }
 
@@ -96,6 +97,7 @@ class AssetFilter extends \Cake\Routing\Filter\AssetFilter
     {
         $fileFragment = implode(DS, $parts);
         $path = $isAssetRequest ? ROOT . DS . 'src' . DS . 'Assets' . DS : WWW_ROOT;
+
         return $path . $fileFragment;
     }
 }

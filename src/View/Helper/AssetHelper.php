@@ -51,6 +51,7 @@ class AssetHelper extends Helper
     public function css($path, $plugin = false, $appendTime = true)
     {
         $href = $this->_getUrl($path, $plugin, $appendTime);
+
         return '<link rel="stylesheet" type="text/css" href="' . $href . '">';
     }
 
@@ -66,6 +67,7 @@ class AssetHelper extends Helper
     public function js($path, $plugin = false, $appendTime = true)
     {
         $src = $this->_getUrl($path, $plugin, $appendTime);
+
         return '<script type="text/javascript" src="' . $src . '"></script>';
     }
 
@@ -119,6 +121,7 @@ class AssetHelper extends Helper
         if ($plugin !== false) {
             return $this->_getPluginPath($plugin) . 'src' . DS . 'Assets' . DS;
         }
+
         return ROOT . DS . 'src' . DS . 'Assets' . DS;
     }
 
@@ -133,6 +136,7 @@ class AssetHelper extends Helper
         if ($plugin !== false) {
             return $this->_getPluginPath($plugin) . 'webroot' . DS;
         }
+
         return WWW_ROOT;
     }
 
@@ -148,6 +152,7 @@ class AssetHelper extends Helper
             throw new MissingPluginException('Plugin ' . $plugin . ' is not loaded.');
         }
         $pluginPath = Plugin::path($plugin);
+
         return $pluginPath;
     }
 
@@ -162,6 +167,7 @@ class AssetHelper extends Helper
         if (file_exists($absPath)) {
             return '?t=' . filemtime($absPath);
         }
+
         return '';
     }
 }
