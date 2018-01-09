@@ -31,6 +31,15 @@ class AssetHelper extends Helper
     ];
 
     /**
+     * Default config for this helper.
+     *
+     * @var array
+     */
+    protected $_defaultConfig = [
+        'fullBase' => false
+    ];
+
+    /**
      * Output a link stylesheet tag for a specific css file and optionally
      * append a last modified timestamp to clear the browser cache.
      *
@@ -92,7 +101,11 @@ class AssetHelper extends Helper
         }
         $path = $pathPrefix . $path;
 
-        return $this->Url->assetUrl($path) . $time;
+        $options = [
+            'fullBase' => (bool)$this->getConfig('fullBase', false)
+        ];
+
+        return $this->Url->assetUrl($path, $options) . $time;
     }
 
     /**
