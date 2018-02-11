@@ -46,13 +46,14 @@ class AssetHelper extends Helper
      * @param string $path The path to the css file relative to WEBROOT
      * @param bool $plugin Either false or the name of a plugin.
      * @param bool $appendTime Whether to append a last modified timestamp to the url.
+     * @param array $attributes Additional html attributes to render on the link tag.
      * @return string
      */
-    public function css($path, $plugin = false, $appendTime = true)
+    public function css($path, $plugin = false, $appendTime = true, array $attributes = [])
     {
         $href = $this->_getUrl($path, $plugin, $appendTime);
 
-        return '<link rel="stylesheet" type="text/css" href="' . $href . '">';
+        return '<link rel="stylesheet" type="text/css" href="' . $href . '"' . $this->_renderAttributes($attributes) . '>';
     }
 
     /**
@@ -62,13 +63,14 @@ class AssetHelper extends Helper
      * @param string $path The path to the css file relative to the app or plugin webroot.
      * @param bool|string $plugin Either false or the name of a plugin.
      * @param bool $appendTime Whether to append a last modified timestamp to the url.
+     * @param array $attributes Additional html attributes to render on the script tag.
      * @return string
      */
-    public function js($path, $plugin = false, $appendTime = true)
+    public function js($path, $plugin = false, $appendTime = true, array $attributes = [])
     {
         $src = $this->_getUrl($path, $plugin, $appendTime);
 
-        return '<script type="text/javascript" src="' . $src . '"></script>';
+        return '<script type="text/javascript" src="' . $src . '"' . $this->_renderAttributes($attributes) . '></script>';
     }
 
     /**
@@ -169,5 +171,25 @@ class AssetHelper extends Helper
         }
 
         return '';
+    }
+
+    /**
+     * Render attribute key value pairs as html attributes.
+     *
+     * @param array $attributes
+     * @return string
+     */
+    protected function _renderAttributes(array $attributes = [])
+    {
+        $attributeStrings = [];
+        foreach ($attributes as $attribute => $value) {
+            $attributeStrings[] = $attribute . '="' . htmlentities($value) . '"';
+        }
+
+        if (empty($attributeStrings)) {
+            return '';
+        }
+
+        return ' ' . join(' ', $attributeStrings);
     }
 }
