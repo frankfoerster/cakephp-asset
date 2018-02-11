@@ -176,7 +176,7 @@ class AssetHelper extends Helper
     /**
      * Render attribute key value pairs as html attributes.
      *
-     * @param array $attributes
+     * @param array $attributes Key value pairs of html attributes.
      * @return string
      */
     protected function _renderAttributes(array $attributes = [])
