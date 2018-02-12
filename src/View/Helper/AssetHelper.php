@@ -51,7 +51,7 @@ class AssetHelper extends Helper
      */
     public function css($path, $plugin = false, $appendTime = true, array $attributes = [])
     {
-        $href = $this->_getUrl($path, $plugin, $appendTime);
+        $href = $this->getUrl($path, $plugin, $appendTime);
 
         return '<link rel="stylesheet" type="text/css" href="' . $href . '"' . $this->_renderAttributes($attributes) . '>';
     }
@@ -68,7 +68,7 @@ class AssetHelper extends Helper
      */
     public function js($path, $plugin = false, $appendTime = true, array $attributes = [])
     {
-        $src = $this->_getUrl($path, $plugin, $appendTime);
+        $src = $this->getUrl($path, $plugin, $appendTime);
 
         return '<script type="text/javascript" src="' . $src . '"' . $this->_renderAttributes($attributes) . '></script>';
     }
@@ -81,7 +81,7 @@ class AssetHelper extends Helper
      * @param bool $appendTime Whether to append a last modified timestamp to the url.
      * @return string
      */
-    protected function _getUrl($path, $plugin, $appendTime = true)
+    public function getUrl($path, $plugin, $appendTime = true)
     {
         $pathParts = explode('/', $path);
         $isAssetPath = ($pathParts[0] === 'ASSETS');
