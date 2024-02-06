@@ -24,9 +24,11 @@ use Cake\View\Helper;
 class AssetHelper extends Helper
 {
     /**
-     * {@inheritDoc}
+     * List of helpers used by this helper
+     *
+     * @var array
      */
-    public $helpers = [
+    public array $helpers = [
         'Url'
     ];
 
@@ -35,7 +37,7 @@ class AssetHelper extends Helper
      *
      * @var array
      */
-    protected $_defaultConfig = [
+    protected array $_defaultConfig = [
         'fullBase' => false
     ];
 
@@ -49,7 +51,7 @@ class AssetHelper extends Helper
      * @param array $attributes Additional html attributes to render on the link tag.
      * @return string
      */
-    public function css($path, $plugin = false, $appendTime = true, array $attributes = [])
+    public function css(string $path, bool|string $plugin = false, bool $appendTime = true, array $attributes = []): string
     {
         $href = $this->getUrl($path, $plugin, $appendTime);
 
@@ -66,7 +68,7 @@ class AssetHelper extends Helper
      * @param array $attributes Additional html attributes to render on the script tag.
      * @return string
      */
-    public function js($path, $plugin = false, $appendTime = true, array $attributes = [])
+    public function js(string $path, bool|string $plugin = false, bool $appendTime = true, array $attributes = []): string
     {
         $src = $this->getUrl($path, $plugin, $appendTime);
 
@@ -81,16 +83,11 @@ class AssetHelper extends Helper
      * @param bool $appendTime Whether to append a last modified timestamp to the url.
      * @return string
      */
-    public function getUrl($path, $plugin, $appendTime = true)
+    public function getUrl(string $path, bool|string $plugin, bool $appendTime = true): string
     {
         $pathParts = explode('/', $path);
-        $isAssetPath = ($pathParts[0] === 'ASSETS');
 
-        if ($isAssetPath) {
-            $absPath = $this->_getBaseAssetPath($plugin) . join('/', array_slice($pathParts, 1));
-        } else {
-            $absPath = $this->_getBasePath($plugin) . $path;
-        }
+        $absPath = $this->_getBasePath($plugin) . $path;
 
         $time = $appendTime ? $this->_getModifiedTime($absPath) : '';
         $pathPrefix = '';
@@ -100,8 +97,6 @@ class AssetHelper extends Helper
                 $pluginParts[$key] = Inflector::underscore($part);
             }
             $pathPrefix .= join('/', $pluginParts) . '/';
-        } else {
-            $pathPrefix = '';
         }
         $path = $pathPrefix . $path;
 
@@ -118,7 +113,7 @@ class AssetHelper extends Helper
      * @param bool|string $plugin The name of a plugin or false.
      * @return string
      */
-    protected function _getBaseAssetPath($plugin = false)
+    protected function _getBaseAssetPath(bool|string $plugin = false): string
     {
         if ($plugin !== false) {
             return $this->_getPluginPath($plugin) . 'src' . DS . 'Assets' . DS;
@@ -133,7 +128,7 @@ class AssetHelper extends Helper
      * @param bool|string $plugin Either false or the name of a plugin.
      * @return string
      */
-    protected function _getBasePath($plugin = false)
+    protected function _getBasePath(bool|string $plugin = false): string
     {
         if ($plugin !== false) {
             return $this->_getPluginPath($plugin) . 'webroot' . DS;
@@ -148,9 +143,9 @@ class AssetHelper extends Helper
      * @param string $plugin The name of the plugin.
      * @return string
      */
-    protected function _getPluginPath($plugin)
+    protected function _getPluginPath(string $plugin): string
     {
-        if (!Plugin::loaded($plugin)) {
+        if (!in_array($plugin, Plugin::loaded())) {
             throw new MissingPluginException('Plugin ' . $plugin . ' is not loaded.');
         }
         $pluginPath = Plugin::path($plugin);
@@ -164,7 +159,7 @@ class AssetHelper extends Helper
      * @param string $absPath The absolute path to the file.
      * @return string
      */
-    protected function _getModifiedTime($absPath)
+    protected function _getModifiedTime(string $absPath): string
     {
         if (file_exists($absPath)) {
             return '?t=' . filemtime($absPath);
@@ -179,7 +174,7 @@ class AssetHelper extends Helper
      * @param array $attributes Key value pairs of html attributes.
      * @return string
      */
-    protected function _renderAttributes(array $attributes = [])
+    protected function _renderAttributes(array $attributes = []): string
     {
         $attributeStrings = [];
         foreach ($attributes as $attribute => $value) {

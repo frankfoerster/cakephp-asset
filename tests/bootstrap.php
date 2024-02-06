@@ -9,8 +9,9 @@
  * @link          http://cakephp.org CakePHP(tm) Project
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 // include autoload from Composer
-use Cake\Core\Plugin;
+use Cake\Core\Configure;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 // include paths from CakePHP
@@ -18,18 +19,13 @@ require dirname(__DIR__) . '/tests/paths.php';
 // disable cache to avoid errors on tests
 \Cake\Cache\Cache::disable();
 
-Plugin::load('TestPlugin', [
-    'path' => ROOT . DS . 'Plugin' . DS . 'TestPlugin' . DS
-]);
+define('CONFIG', ROOT . DS . 'config' . DS);
 
-Plugin::load('Namespaced/Plugin', [
-    'path' => ROOT . DS . 'Plugin' . DS . 'Namespaced' . DS . 'Plugin' . DS
-]);
-
-Plugin::load('Namespaced2/TestPlugin', [
-    'path' => ROOT . DS . 'Plugin' . DS . 'Namespaced2' . DS . 'TestPlugin' . DS
-]);
-
-Plugin::load('FooBar/TestPlugin', [
-    'path' => ROOT . DS . 'Plugin' . DS . 'FooBar' . DS . 'TestPlugin' . DS
+Configure::write('App', [
+    'namespace' => 'TestApp',
+    'base' => false,
+    'fullBaseUrl' => false,
+    'paths' => [
+        'plugins' => [ROOT . DS . 'plugins' . DS],
+    ],
 ]);

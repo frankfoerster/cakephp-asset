@@ -8,17 +8,20 @@
   "authors": [
     {
       "name": "Frank Förster",
-      "homepage": "http://frankfoerster.com",
+      "homepage": "https://frankfoerster.com",
       "role": "Developer"
     }
   ],
+  "scripts": {
+    "test": "phpunit"
+  },
   "require": {
-    "php": ">=7.0.0"
+    "php": ">=8.3.0"
   },
   "require-dev": {
-    "cakephp/cakephp": "~3.4",
-    "phpunit/phpunit": "^5.7.14|^6.0",
-    "cakephp/cakephp-codesniffer": "^3.0"
+    "cakephp/cakephp": "^5.0.5",
+    "phpunit/phpunit": "11.0.2",
+    "cakephp/cakephp-codesniffer": "5.1.1"
   },
   "autoload": {
     "psr-4": {
@@ -27,7 +30,17 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "FrankFoerster\\Asset\\Test\\": "tests"
+      "TestApp\\": "tests/testapp/src",
+      "FrankFoerster\\Asset\\Test\\": "tests",
+      "FooBar\\TestPlugin\\": "tests/testapp/plugins/FooBar/TestPlugin/src",
+      "Namespaced\\Plugin\\": "tests/testapp/plugins/Namespaced/Plugin/src",
+      "Namespaced2\\TestPlugin\\": "tests/testapp/plugins/Namespaced2/TestPlugin/src",
+      "TestPlugin\\": "tests/testapp/plugins/TestPlugin/src"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
     }
   }
 }

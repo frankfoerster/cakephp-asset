@@ -71,7 +71,7 @@ echo $this->Asset->css('css/app.css');
 produces the following output:
 
 ```html
-<link rel="stylesheet" type="text/css" href="css/app.css?t=1460443221">
+<link rel="stylesheet" type="text/css" href="/css/app.css?t=1460443221">
 ```
 
 ### JS
@@ -85,7 +85,7 @@ echo $this->Asset->js('js/app.js');
 produces the following output:
 
 ```html
-<script type="text/javascript" src="js/app.js?t=1460443221"></script>
+<script type="text/javascript" src="/js/app.js?t=1460443221"></script>
 ```
 
 ### Linking Plugin Assets
@@ -99,51 +99,5 @@ echo $this->Asset->js('js/plugin.js', 'MyPlugin');
 produces the following output:
 
 ```html
-<script type="text/javascript" src="my_plugin/js/plugin.js?t=1460443221"></script>
+<script type="text/javascript" src="/my_plugin/js/plugin.js?t=1460443221"></script>
 ```
-
-### Linking Source Assets
-
-To request assets from ``/src/Assets/*`` you have to enable the AssetFilter in ``config/bootstrap.php``:
-
-```php
-DispatcherFactory::add('FrankFoerster/Asset.Asset');
-```
-
-Then you can use the AssetHelper to request a source asset.
-
-#### App
-
-Linking the JS file **your_app/src/Assets/js/app.js**
-
-```php
-echo $this->Asset->js('ASSETS/js/app.js');
-```
-
-produces the following output:
-
-```html
-<script type="text/javascript" src="ASSETS/js/app.js?t=1460443221"></script>
-```
-
-and the AssetFilter will then return the content of **your_app/src/Assets/js/app.js**.
-
-#### Plugin
-
-Linking the JS file **MyPlugin/src/Assets/js/plugin.js**
-
-```php
-echo $this->Asset->js('ASSETS/js/plugin.js', 'MyPlugin);
-```
-
-will procude the following output:
-
-```html
-<script type="text/javascript" src="my_plugin/ASSETS/js/plugin.js?t=1460443221"></script>
-```
-
-and the AssetFilter will then return the content of **MyPlugin/src/Assets/js/plugin.js**.
-
-#### Important!
-
-Linking of source assets is only enabled for Configure ``'debug' => true``.

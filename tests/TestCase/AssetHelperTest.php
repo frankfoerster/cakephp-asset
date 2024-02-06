@@ -10,8 +10,12 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+use Cake\Core\Exception\MissingPluginException;
+use Cake\Http\Response;
 use Cake\TestSuite\TestCase;
+use Cake\View\View;
 use FrankFoerster\Asset\View\Helper\AssetHelper;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Class AssetHelperTest
@@ -19,24 +23,36 @@ use FrankFoerster\Asset\View\Helper\AssetHelper;
  */
 class AssetHelperTest extends TestCase
 {
+    protected AssetHelper $AssetHelper;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
-        $request = new \Cake\Network\Request();
-        $response = new \Cake\Network\Response();
-        $view = new \Cake\View\View($request, $response);
+
+        \Cake\Routing\Router::reload();
+        $this->loadRoutes();
+
+        $this->loadPlugins([
+            \FooBar\TestPlugin\Plugin::class,
+            \Namespaced\Plugin\Plugin::class,
+            \Namespaced2\TestPlugin\Plugin::class,
+            \TestPlugin\Plugin::class
+        ]);
+
+        $response = new Response(['charset' => 'utf8']);
+        $view = new View(null, $response);
         $this->AssetHelper = new AssetHelper($view);
+        $view->loadHelper('Url');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
     }
 
-    public function testLoadedHelpers()
+    public function testLoadedHelpers(): void
     {
-        $this->assertTrue(in_array('Url', $this->AssetHelper->helpers));
+        $this->assertTrue(in_array('Url', array_keys($this->AssetHelper->helpers)));
     }
 
     /**
@@ -44,173 +60,117 @@ class AssetHelperTest extends TestCase
      *
      * - theme assets.
      * - plugin assets.
-     * - plugin assets in sub directories.
+     * - plugin assets in subdirectories.
      * - unknown plugin assets.
      *
      * @return array
      */
-    public static function assetProvider()
+    public static function assetProvider(): array
     {
         return [
             [
                 'css',
                 'css/test.css',
                 false,
-                'css/test.css',
+                '/css/test.css',
                 true
             ],
             [
                 'css',
                 'css/foobar.css',
                 false,
-                'css/foobar.css',
+                '/css/foobar.css',
                 false
             ],
             [
                 'css',
                 'css/plugin.css',
                 'TestPlugin',
-                'test_plugin/css/plugin.css',
+                '/test_plugin/css/plugin.css',
                 true
             ],
             [
                 'css',
                 'css/test.css',
                 'TestPlugin',
-                'test_plugin/css/test.css',
+                '/test_plugin/css/test.css',
                 false
             ],
             [
                 'js',
                 'js/test.js',
                 false,
-                'js/test.js',
+                '/js/test.js',
                 true
             ],
             [
                 'js',
                 'js/foobar.js',
                 false,
-                'js/foobar.js',
-                false
-            ],
-            [
-                'js',
-                'ASSETS/js/test.js',
-                false,
-                'ASSETS/js/test.js',
-                true
-            ],
-            [
-                'js',
-                'ASSETS/js/foobar.js',
-                false,
-                'ASSETS/js/foobar.js',
+                '/js/foobar.js',
                 false
             ],
             [
                 'js',
                 'js/plugin.js',
                 'TestPlugin',
-                'test_plugin/js/plugin.js',
+                '/test_plugin/js/plugin.js',
                 true
             ],
             [
                 'js',
                 'js/test.js',
                 'TestPlugin',
-                'test_plugin/js/test.js',
-                false
-            ],
-            [
-                'js',
-                'ASSETS/js/test.js',
-                'TestPlugin',
-                'test_plugin/ASSETS/js/test.js',
-                true
-            ],
-            [
-                'js',
-                'ASSETS/js/foobar.js',
-                'TestPlugin',
-                'test_plugin/ASSETS/js/foobar.js',
+                '/test_plugin/js/test.js',
                 false
             ],
             [
                 'js',
                 'js/plugin.js',
                 'Namespaced/Plugin',
-                'namespaced/plugin/js/plugin.js',
+                '/namespaced/plugin/js/plugin.js',
                 true
             ],
             [
                 'css',
                 'css/plugin.css',
                 'Namespaced/Plugin',
-                'namespaced/plugin/css/plugin.css',
-                true
-            ],
-            [
-                'js',
-                'ASSETS/js/test.js',
-                'Namespaced/Plugin',
-                'namespaced/plugin/ASSETS/js/test.js',
+                '/namespaced/plugin/css/plugin.css',
                 true
             ],
             [
                 'js',
                 'js/plugin.js',
                 'Namespaced2/TestPlugin',
-                'namespaced2/test_plugin/js/plugin.js',
+                '/namespaced2/test_plugin/js/plugin.js',
                 true
             ],
             [
                 'css',
                 'css/plugin.css',
                 'Namespaced2/TestPlugin',
-                'namespaced2/test_plugin/css/plugin.css',
-                true
-            ],
-            [
-                'js',
-                'ASSETS/js/test.js',
-                'Namespaced2/TestPlugin',
-                'namespaced2/test_plugin/ASSETS/js/test.js',
+                '/namespaced2/test_plugin/css/plugin.css',
                 true
             ],
             [
                 'js',
                 'js/plugin.js',
                 'FooBar/TestPlugin',
-                'foo_bar/test_plugin/js/plugin.js',
+                '/foo_bar/test_plugin/js/plugin.js',
                 true
             ],
             [
                 'css',
                 'css/plugin.css',
                 'FooBar/TestPlugin',
-                'foo_bar/test_plugin/css/plugin.css',
-                true
-            ],
-            [
-                'js',
-                'ASSETS/js/test.js',
-                'FooBar/TestPlugin',
-                'foo_bar/test_plugin/ASSETS/js/test.js',
+                '/foo_bar/test_plugin/css/plugin.css',
                 true
             ],
             [
                 'js',
                 'js/foobar.js',
                 'FooBar/TestPlugin',
-                'foo_bar/test_plugin/js/foobar.js',
-                false
-            ],
-            [
-                'js',
-                'ASSETS/js/foobar.js',
-                'FooBar/TestPlugin',
-                'foo_bar/test_plugin/ASSETS/js/foobar.js',
+                '/foo_bar/test_plugin/js/foobar.js',
                 false
             ]
         ];
@@ -219,7 +179,6 @@ class AssetHelperTest extends TestCase
     /**
      * Test the asset helper methods.
      *
-     * @dataProvider assetProvider
      * @param string $method
      * @param string $asset
      * @param bool|string $plugin
@@ -227,7 +186,8 @@ class AssetHelperTest extends TestCase
      * @param bool $timestamp
      * @return void
      */
-    public function testAssetHelper($method, $asset, $plugin, $expected, $timestamp)
+    #[DataProvider('assetProvider')]
+    public function testAssetHelper(string $method, string $asset, bool|string $plugin, string $expected, bool $timestamp): void
     {
         if (!method_exists($this->AssetHelper, $method)) {
             user_error('Method "' . $method . '"" does not exist on AssetHelper and therefore cannot be tested.');
@@ -249,19 +209,15 @@ class AssetHelperTest extends TestCase
         }
     }
 
-    /**
-     * @expectedException \Cake\Core\Exception\MissingPluginException
-     */
-    public function testCssForMissingPlugin()
+    public function testCssForMissingPlugin(): void
     {
+        $this->expectException(MissingPluginException::class);
         $this->AssetHelper->css('css/test.css', 'Whatever');
     }
 
-    /**
-     * @expectedException \Cake\Core\Exception\MissingPluginException
-     */
-    public function testJsForMissingPlugin()
+    public function testJsForMissingPlugin(): void
     {
+        $this->expectException(MissingPluginException::class);
         $this->AssetHelper->js('js/test.js', 'Whatever');
     }
 }
